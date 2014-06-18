@@ -9,7 +9,6 @@ Convert your animated png files to animated webp files.
 - libpng
 - zlib
 - pip (a python package used during installation)
-- sh (a python package)
 - `cwebp` program must be in path
 - `webpmux` program must be in path
 
@@ -27,9 +26,13 @@ sudo make install
 
 In `apng2webp/` execute:
 
+```bash
 sudo python ./setup.py install
+```
 
 ## Running:
 
-apng2webp input.png output.webp
+```bash
+apng2webp './input.png' './output.webp'
+```
 
