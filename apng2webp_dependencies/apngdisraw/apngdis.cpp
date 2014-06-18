@@ -28,10 +28,13 @@
  *
  */
 #include <stdio.h>
+#include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <vector>
 #include "png.h"     /* original (unpatched) libpng is ok */
 #include "zlib.h"
+#include "json/writer.h"
 using namespace std;
 
 #if defined(_MSC_VER) && _MSC_VER >= 1300
@@ -65,11 +68,20 @@ unsigned int swap32(unsigned int data) {return((data & 0xFF) << 24) | ((data & 0
 
 struct CHUNK { unsigned char * p; unsigned int size; };
 
+#define APNG_DISPOSE_OP_NONE 0
+#define APNG_DISPOSE_OP_BACKGROUND 1
+#define APNG_DISPOSE_OP_PREVIOUS 2
+
+#define APNG_BLEND_OP_SOURCE 0
+#define APNG_BLEND_OP_OVER 1
+
 struct APNGFrame
 {
   unsigned char * p;
+  unsigned int x, y;
   unsigned int w, h;
   unsigned int delay_num, delay_den;
+  unsigned int blend_op, dispose_op;
   png_bytep * rows;
 };
 
@@ -94,7 +106,7 @@ void row_fn(png_structp png_ptr, png_bytep new_row, png_uint_32 row_num, int pas
   png_progressive_combine_row(png_ptr, frame->rows[row_num], new_row);
 }
 
-void compose_frame(unsigned char ** rows_dst, unsigned char ** rows_src, unsigned char bop, unsigned int x, unsigned int y, unsigned int w, unsigned int h)
+void compose_frame(unsigned char ** rows_dst, unsigned char ** rows_src, unsigned char bop, unsigned int w, unsigned int h)
 {
   unsigned int  i, j;
   int u, v, al;
@@ -102,9 +114,11 @@ void compose_frame(unsigned char ** rows_dst, unsigned char ** rows_src, unsigne
   for (j=0; j<h; j++)
   {
     unsigned char * sp = rows_src[j];
-    unsigned char * dp = rows_dst[j+y] + x*4;
+    unsigned char * dp = rows_dst[j];
 
-    if (bop == 0)
+    memset(dp, 0, w*4);
+
+    if (bop == APNG_BLEND_OP_SOURCE)
       memcpy(dp, sp, w*4);
     else
     for (i=0; i<w; i++, sp+=4, dp+=4)
@@ -193,8 +207,8 @@ int LoadAPNG(char * szIn)
         y0 = 0;
         delay_num = 1;
         delay_den = 10;
-        dop = 0;
-        bop = 0;
+        dop = APNG_DISPOSE_OP_NONE;
+        bop = APNG_BLEND_OP_SOURCE;
         rowbytes = w * 4;
         imagesize = h * rowbytes;
 
@@ -242,18 +256,24 @@ int LoadAPNG(char * szIn)
               for (j=0; j<h; ++j)
                 frameNext.rows[j] = frameNext.p + j * rowbytes;
 
-              if (dop == 2)
+              if (dop == APNG_DISPOSE_OP_PREVIOUS)
                 memcpy(frameNext.p, frameCur.p, imagesize);
 
-              compose_frame(frameCur.rows, frameRaw.rows, bop, x0, y0, w0, h0);
+              compose_frame(frameCur.rows, frameRaw.rows, bop, w0, h0);
+              frameCur.blend_op = bop;
+              frameCur.dispose_op = dop;
+              frameCur.x = x0;
+              frameCur.y = y0;
+              frameCur.w = w0;
+              frameCur.h = h0;
               frameCur.delay_num = delay_num;
               frameCur.delay_den = delay_den;
               frames.push_back(frameCur);
 
-              if (dop != 2)
+              if (dop != APNG_DISPOSE_OP_PREVIOUS)
               {
                 memcpy(frameNext.p, frameCur.p, imagesize);
-                if (dop == 1)
+                if (dop == APNG_DISPOSE_OP_BACKGROUND)
                   for (j=0; j<h0; j++)
                     memset(frameNext.rows[y0 + j] + x0*4, 0, w0*4);
               }
@@ -278,13 +298,13 @@ int LoadAPNG(char * szIn)
             y0 = swap32(pi[6]);
             delay_num = chunk.p[28]*256 + chunk.p[29];
             delay_den = chunk.p[30]*256 + chunk.p[31];
-            dop = chunk.p[32];
-            bop = chunk.p[33];
+            dop = chunk.p[32]; // dispose_op
+            bop = chunk.p[33]; // blend_op
             if (!flag_fctl)
             {
-              bop = 0;
-              if (dop == 2)
-                dop = 1;
+              bop = APNG_BLEND_OP_SOURCE;
+              if (dop == APNG_DISPOSE_OP_PREVIOUS)
+                dop = APNG_DISPOSE_OP_BACKGROUND;
             }
             flag_fctl = 1;
             delete[] chunk.p;
@@ -326,7 +346,13 @@ int LoadAPNG(char * szIn)
           {
             png_process_data(png_ptr, info_ptr, &footer[0], 12);
 
-            compose_frame(frameCur.rows, frameRaw.rows, bop, x0, y0, w0, h0);
+            compose_frame(frameCur.rows, frameRaw.rows, bop, w0, h0);
+            frameCur.blend_op = bop;
+            frameCur.dispose_op = dop;
+            frameCur.x = x0;
+            frameCur.y = y0;
+            frameCur.w = w0;
+            frameCur.h = h0;
             frameCur.delay_num = delay_num;
             frameCur.delay_den = delay_den;
             frames.push_back(frameCur);
@@ -408,7 +434,10 @@ int main(int argc, char** argv)
   char * szInput;
   char * szOutPrefix;
   char   szPath[256];
+  const char * szFilename;
   char   szOut[256];
+  Json::Value apng_obj;
+  Json::Value frames_vec(Json::arrayValue);
 
   printf("\nAPNG Disassembler 2.6\n\n");
 
@@ -419,7 +448,6 @@ int main(int argc, char** argv)
     printf("Usage: apngdis anim.png [name]\n");
     return 1;
   }
-
   strcpy(szPath, szInput);
   for (i=j=0; szPath[i]!=0; i++)
   {
@@ -440,9 +468,13 @@ int main(int argc, char** argv)
         szOutPrefix[i] = 0;
     }
     strcat(szPath, szOutPrefix+j);
+    szFilename = szOutPrefix+j;
   }
   else
+  {
+    szFilename = "apngframe";
     strcat(szPath, "apngframe");
+  }
 
   if (LoadAPNG(szInput) != 0)
   {
@@ -458,13 +490,31 @@ int main(int argc, char** argv)
     sprintf(szOut, "%s%.*d.png", szPath, len, i+1);
     SavePNG(szOut, &frames[i]);
 
-    sprintf(szOut, "%s%.*d.txt", szPath, len, i+1);
-    SaveTXT(szOut, &frames[i]);
+    Json::Value frame_metadata;
+    sprintf(szOut, "%s%.*d.png", szFilename, len, i+1);
+    frame_metadata["src"] = Json::Value(szOut);
+    frame_metadata["delay_num"] = Json::Value(frames[i].delay_num);
+    frame_metadata["delay_den"] = Json::Value(frames[i].delay_den);
+    frame_metadata["x"] = Json::Value(frames[i].x);
+    frame_metadata["y"] = Json::Value(frames[i].y);
+    frame_metadata["blend_op"] = Json::Value(frames[i].blend_op);
+    frame_metadata["dispose_op"] = Json::Value(frames[i].dispose_op);
+    frames_vec.append(frame_metadata);
 
     delete[] frames[i].rows;
     delete[] frames[i].p;
   }
   frames.clear();
+  apng_obj["frames"] = frames_vec;
+
+  Json::StyledWriter writer;
+  std::string frames_metadata = writer.write( apng_obj );
+  cout << frames_metadata << endl;
+  ofstream metadata_f;
+  sprintf(szOut, "%s_metadata.json", szPath);
+  metadata_f.open (szOut);
+  metadata_f << frames_metadata;
+  metadata_f.close();
 
   printf("all done\n");
 
