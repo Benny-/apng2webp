@@ -9,8 +9,8 @@ Convert your animated png files to animated webp files.
 - libpng
 - zlib
 - pip (a python package used during installation)
-- `cwebp` program must be in path
-- `webpmux` program must be in path
+- The `cwebp` program must be in your path
+- The `webpmux` program must be in your path
 
 ## Compiling and installation:
 
