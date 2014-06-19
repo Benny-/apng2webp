@@ -1,5 +1,1 @@
-Mixed license.
-
-zlib license for apngdisraw
-LGPL for apng2webp_apngopt
-
+zlib license for apngdisraw and apng2webp_apngopt
