@@ -1134,10 +1134,7 @@ unsigned int get_rect(unsigned int w, unsigned int h, unsigned char *pimg1, unsi
     int y_alignment_offset = y_min % 2 ? -1 : 0;
     
     x_min += x_alignment_offset;
-    x_max += abs(x_alignment_offset);
-    
     y_min += y_alignment_offset;
-    y_max += abs(y_alignment_offset);
     
     *px = x_min;
     *py = y_min;
