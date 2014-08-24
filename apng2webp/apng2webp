@@ -33,6 +33,10 @@ def apng2webp(input_file, output_file, tmpdir):
         cwebp('-lossless', '-q', '100', png_frame_file, '-o', webp_frame_file)
         
         delay = int(round(float(frame['delay_num']) / float(frame['delay_den']) * 1000))
+        
+        if delay == 0: # The specs say zero is allowed, but should be treated as 10 ms.
+            delay = 10;
+        
         if frame['blend_op'] == 0:
             blend_mode = '-b'
         elif frame['blend_op'] == 1:

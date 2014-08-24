@@ -10,7 +10,7 @@ reqs = [str(ir.req) for ir in install_reqs]
 
 setup(
     name = 'apng2webp',
-    version = '0.0.1',
+    version = '0.0.2',
     author = 'Benny',
     author_email = 'Benny@GMX.it',
     url='',
