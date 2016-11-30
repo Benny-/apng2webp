@@ -2,9 +2,14 @@
 
 from setuptools import setup, find_packages
 from pip.req import parse_requirements
+import pip
+import os
 
 # parse_requirements() returns generator of pip.req.InstallRequirement objects
-install_reqs = parse_requirements('requirements.pip')
+if os.name == 'nt':
+	install_reqs = parse_requirements('winrequirements.pip', session=pip.download.PipSession())
+else:
+	install_reqs = parse_requirements('requirements.pip', session=pip.download.PipSession())
 
 reqs = [str(ir.req) for ir in install_reqs]
 
