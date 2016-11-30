@@ -1,17 +1,13 @@
 #!/usr/bin/env python
 
 from setuptools import setup, find_packages
-from pip.req import parse_requirements
 import pip
 import os
 
-# parse_requirements() returns generator of pip.req.InstallRequirement objects
 if os.name == 'nt':
-	install_reqs = parse_requirements('winrequirements.pip', session=pip.download.PipSession())
+    reqs = ['pbs']
 else:
-	install_reqs = parse_requirements('requirements.pip', session=pip.download.PipSession())
-
-reqs = [str(ir.req) for ir in install_reqs]
+    reqs = ['sh']
 
 setup(
     name = 'apng2webp',
