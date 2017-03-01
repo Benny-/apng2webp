@@ -11,7 +11,7 @@ import shutil
 
 from sh import apng2webp_apngopt, apngdisraw, cwebp, webpmux
 
-def apng2webp(input_file, output_file, tmpdir):
+def apng2webp(input_file, output_file, tmpdir, loop, bgcolor):
     
     de_optimised_file = path.join(tmpdir, "de-optimised.png")
     animation_json_file = path.join(tmpdir, "animation_metadata.json")
@@ -47,21 +47,59 @@ def apng2webp(input_file, output_file, tmpdir):
         webpmux_args.append('-frame')
         webpmux_args.append(webp_frame_file)
         webpmux_args.append('+' + str(delay) + '+' + str(frame['x']) + '+' + str(frame['y']) + '+' + str(frame['dispose_op']) + blend_mode )
+    webpmux_args = webpmux_args + ['-loop', loop]
+    webpmux_args = webpmux_args + ['-bgcolor', bgcolor]
     webpmux_args = webpmux_args + ['-o', output_file]
+    print(webpmux_args)
     webpmux(*webpmux_args)
     
 def main():
-    if(len(sys.argv) != 3):
-        print("Usage: "+sys.argv[0]+" input.png output.webp")
+    argc = len(sys.argv)
+    if (argc < 3):
+        print("Usage: apng2webp input.png [-loop LOOP_COUNT] [-bgcolor BACKGROUND_COLOR] [-tmpdir TEMP_WEBP_DIR] output.webp")
         sys.exit(errno.EINVAL)
     else:
         input_file = sys.argv[1]
-        output_file = sys.argv[2]
-        tmpdir = mkdtemp(prefix='apng2webp_')
-        try:
-            apng2webp(input_file, output_file, tmpdir)
-        finally:
-            shutil.rmtree(tmpdir)
+        output_file = sys.argv[argc-1]
+        loop = '0'
+        bgcolor = '255,255,255,255'
+        tmpdir = None
+        if (argc == 3):
+            tmpdir = mkdtemp(prefix='apng2webp_')
+            try:
+                apng2webp(input_file, output_file, tmpdir, loop, bgcolor)
+                print('finished')
+            finally:
+                shutil.rmtree(tmpdir)
+        elif (argc == 5 or argc == 7 or argc == 9):
+            argc_list = [2,4,6]
+            for argc_index in argc_list:
+                if (argc < argc_index+2):
+                    break
+                op = sys.argv[argc_index]
+                if (op == '-loop'):
+                    loop = sys.argv[argc_index+1]
+                elif (op == '-bgcolor'):
+                    bgcolor = sys.argv[argc_index+1]
+                elif (op == '-tmpdir'):
+                    tmpdir = sys.argv[argc_index+1]
+
+            if (tmpdir):
+                if not os.path.exists(tmpdir):
+                    os.makedirs(tmpdir)
+                try:
+                    apng2webp(input_file, output_file, tmpdir, loop, bgcolor)
+                    print('finished')
+                finally:
+                    print('Outputed temp webp to '+tmpdir)
+            else:
+                tmpdir = mkdtemp(prefix='apng2webp_')
+                try:
+                    apng2webp(input_file, output_file, tmpdir, loop, bgcolor)
+                    print('finished')
+                finally:
+                    shutil.rmtree(tmpdir)
+
 
 if __name__ == "__main__":
     main();
