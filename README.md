@@ -60,7 +60,7 @@ sudo python ./setup.py install
 
 The default loop is `0`(infinity) and bgcolor is `255,255,255,255`.
 
-You can also specify a temp dir to save the webp frame extracted and optimized from original apng.
+You can also specify a temp dir to save the webp fram and optimized original apng.
 
 ```bash
 apng2webp './input.png' './output.webp'
