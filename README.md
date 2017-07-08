@@ -10,7 +10,7 @@ Convert your animated png files to animated webp files.
 
 options:
 
-`-loop`: spcify the animated WebP loop count. 0 means loop infinity. The default value is 0.
+`-loop`: spcify the animated WebP loop count. 0 means loop infinity. The default value is the loop count from original APNG.
 
 `-bgcolor`: spcify the animated WebP background color with RGBA format. The default value is 255,255,255,255
 
@@ -34,10 +34,10 @@ apng2webp ./input.png -loop 3 -bgcolor 255,255,255,255 -tmpdir ./ ./output.webp
 
 ## Build Prepare
 
-###macOS
+### macOS
 
-Use [Homebrew](https://brew.sh/) to install all the dependencies.
-Use `easy_install` to install pip.
++ Use [Homebrew](https://brew.sh/) to install all the dependencies.
++ Use `easy_install` to install pip.
 
 ```bash
 brew update
@@ -47,9 +47,9 @@ brew install jsoncpp
 sudo easy_install pip
 ```
 
-###Linux
+### Linux
 
-Use `apt-get` to install all the dependencies.
++ Use `apt-get` to install all the dependencies.
 
 ```bash
 sudo apt-get update
@@ -60,12 +60,12 @@ sudo apt-get install webp
 sudo apt-get install libjsoncpp-dev
 ```
 
-###Windows
+### Windows
 
-Use [python](https://www.python.org/downloads/release) to install python and pip.
-Use [cmake](https://cmake.org/download/) to install cmake.
-Use [webp](https://developers.google.com/speed/webp/docs/precompiled) to install cwebp and webpmux to your PATH.
-Use [Mysys2](http://www.msys2.org/) and `MinGW-w64` to install external dependencies. Remember to add your MinGW-w64 folder(e.g. `C:\msys64\mingw64\bin` for 64bit and `C:\msys64\mingw32\bin` for 32bit) to your PATH.
++ Use [python](https://www.python.org/downloads/release) to install python and pip.
++ Use [cmake](https://cmake.org/download/) to install cmake.
++ Use [webp](https://developers.google.com/speed/webp/docs/precompiled) to install cwebp and webpmux to your PATH.
++ Use [Mysys2](http://www.msys2.org/) and `MinGW-w64` to install external dependencies. Remember to add your MinGW-w64 folder(e.g. `C:\msys64\mingw64\bin` for 64bit and `C:\msys64\mingw32\bin` for 32bit) to your PATH.
 
 Run Mysys2 shell(but not PowerShell) to install external dependencies.
 
@@ -79,12 +79,12 @@ pacman -S mingw-w64-x86_64-jsoncpp
 
 If you are using 32bit Windows, change all the command `x86_64` to `i686`.
 
-Additionaly, current version `mingw-w64-x86_64-make 4.2.1` has a [dynamic link bug](https://github.com/Alexpux/MSYS2-packages/issues/842) and can't run on Windows, if you are facing this issue, try `pacman -S mingw-w64-x86_64-gettext` to fix.
+Additionaly, current version `mingw-w64-x86_64-make 4.2.1` has a [dynamic link bug](https://github.com/Alexpux/MSYS2-packages/issues/842) and can not run, if you are facing this issue, try `pacman -S mingw-w64-x86_64-gettext` to fix.
 
 ## Compiling and installation:
 
-###macOS and Linux
-For macOS and Linux user, use terminal shell.
+### macOS and Linux
+For macOS and Linux user, run terminal shell.
 
 In `apng2webp_dependencies/` execute:
 
@@ -96,14 +96,14 @@ make
 (sudo) make install
 ```
 
-In `apng2webp/` execute:
+In project root folder execute:
 
 ```bash
 (sudo) python ./setup.py install
 ```
 
-###Windows
-For Windows user, use PowerShell as Administrator user.
+### Windows
+For Windows user, run PowerShell as Administrator user.
 
 In `apng2webp_dependencies/` execute:
 
@@ -114,9 +114,9 @@ cmake .. -G "MinGW Makefiles"
 mingw32-make
 ```
 
-Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. You can move them to your prefered folder.
+Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. You can also move them to your prefered folder. (Don't forget to change the PATH at the sametime).
 
-In `apng2webp/` execute:
+In project root folder execute:
 
 ```powershell
 python ./setup.py install

@@ -1461,7 +1461,7 @@ int main(int argc, char** argv)
   {
     szOpt = argv[i];
 
-    if (szOpt[0] == '/' || szOpt[0] == '-')
+    if (szOpt[0] == '-')
     {
       if (szOpt[1] == 'z' || szOpt[1] == 'Z')
       {
