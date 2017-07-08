@@ -19,7 +19,6 @@ setup(
     keywords = "webp webby apng converter image".split(),
     description='Convert apng animations to webp animations',
     packages = find_packages(),
-    scripts = ['apng2webp'],
     install_requires = reqs,
     classifiers = [
         "Operating System :: OS Independent",
@@ -28,5 +27,10 @@ setup(
         "Environment :: Console",
         "License :: Public Domain",
     ],
+    entry_points= {
+        'console_scripts': [
+            'apng2webp=apng2webp.apng2webp:main',
+        ],
+    },
 )
 

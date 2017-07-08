@@ -1,2 +1,6 @@
 pyenv/
 examples/
+build/
+dist/
+apng2webp_dependencies/build/
+*.egg-info/
