@@ -33,10 +33,6 @@
 #include <vector>
 #include "png.h"     /* original (unpatched) libpng is ok */
 #include "zlib.h"
-#include "7z.h"
-extern "C" {
-#include "zopfli.h"
-}
 
 #define notabc(c) ((c) < 65 || (c) > 122 || ((c) > 90 && (c) < 97))
 
@@ -920,7 +916,7 @@ void process_rect(unsigned char * row, int rowbytes, int bpp, int stride, int h,
   }
 }
 
-void deflate_rect_fin(int deflate_method, int iter, unsigned char * zbuf, unsigned int * zsize, int bpp, int stride, unsigned char * rows, int zbuf_size, int n)
+void deflate_rect_fin(unsigned char * zbuf, unsigned int * zsize, int bpp, int stride, unsigned char * rows, int zbuf_size, int n)
 {
   unsigned char * row  = op[n].p + op[n].y*stride + op[n].x*bpp;
   int rowbytes = op[n].w*bpp;
@@ -939,46 +935,21 @@ void deflate_rect_fin(int deflate_method, int iter, unsigned char * zbuf, unsign
   else
     process_rect(row, rowbytes, bpp, stride, op[n].h, rows);
 
-  if (deflate_method == 2)
-  {
-    ZopfliOptions opt_zopfli;
-    unsigned char* data = 0;
-    size_t size = 0;
-    ZopfliInitOptions(&opt_zopfli);
-    opt_zopfli.numiterations = iter;
-    ZopfliCompress(&opt_zopfli, ZOPFLI_FORMAT_ZLIB, rows, op[n].h*(rowbytes + 1), &data, &size);
-    if (size < (size_t)zbuf_size)
-    {
-      memcpy(zbuf, data, size);
-      *zsize = size;
-    }
-    free(data);
-  }
-  else
-  if (deflate_method == 1)
-  {
-    unsigned size = zbuf_size;
-    compress_rfc1950_7z(rows, op[n].h*(rowbytes + 1), zbuf, size, iter<100 ? iter : 100, 255);
-    *zsize = size;
-  }
-  else
-  {
-    z_stream fin_zstream;
+  z_stream fin_zstream;
 
-    fin_zstream.data_type = Z_BINARY;
-    fin_zstream.zalloc = Z_NULL;
-    fin_zstream.zfree = Z_NULL;
-    fin_zstream.opaque = Z_NULL;
-    deflateInit2(&fin_zstream, Z_BEST_COMPRESSION, 8, 15, 8, op[n].filters ? Z_FILTERED : Z_DEFAULT_STRATEGY);
+  fin_zstream.data_type = Z_BINARY;
+  fin_zstream.zalloc = Z_NULL;
+  fin_zstream.zfree = Z_NULL;
+  fin_zstream.opaque = Z_NULL;
+  deflateInit2(&fin_zstream, Z_BEST_COMPRESSION, 8, 15, 8, op[n].filters ? Z_FILTERED : Z_DEFAULT_STRATEGY);
 
-    fin_zstream.next_out = zbuf;
-    fin_zstream.avail_out = zbuf_size;
-    fin_zstream.next_in = rows;
-    fin_zstream.avail_in = op[n].h*(rowbytes + 1);
-    deflate(&fin_zstream, Z_FINISH);
-    *zsize = fin_zstream.total_out;
-    deflateEnd(&fin_zstream);
-  }
+  fin_zstream.next_out = zbuf;
+  fin_zstream.avail_out = zbuf_size;
+  fin_zstream.next_in = rows;
+  fin_zstream.avail_in = op[n].h*(rowbytes + 1);
+  deflate(&fin_zstream, Z_FINISH);
+  *zsize = fin_zstream.total_out;
+  deflateEnd(&fin_zstream);
 }
 
 void deflate_rect_op(unsigned char *pdata, int x, int y, int w, int h, int bpp, int stride, int zbuf_size, int n)
@@ -1170,7 +1141,7 @@ void get_rect(unsigned int w, unsigned int h, unsigned char *pimage1, unsigned c
     deflate_rect_op(ptemp, x0, y0, w0, h0, bpp, stride, zbuf_size, n*2+1);
 }
 
-int save_apng(char * szOut, std::vector<APNGFrame>& frames, unsigned int first, unsigned int loops, unsigned int coltype, int deflate_method, int iter)
+int save_apng(char * szOut, std::vector<APNGFrame>& frames, unsigned int first, unsigned int loops, unsigned int coltype)
 {
   FILE * f;
   unsigned int i, j, k;
@@ -1287,7 +1258,7 @@ int save_apng(char * szOut, std::vector<APNGFrame>& frames, unsigned int first, 
     for (j=0; j<6; j++)
       op[j].valid = 0;
     deflate_rect_op(frames[0].p, x0, y0, w0, h0, bpp, rowbytes, zbuf_size, 0);
-    deflate_rect_fin(deflate_method, iter, zbuf, &zsize, bpp, rowbytes, rows, zbuf_size, 0);
+    deflate_rect_fin(zbuf, &zsize, bpp, rowbytes, rows, zbuf_size, 0);
 
     if (first)
     {
@@ -1297,7 +1268,7 @@ int save_apng(char * szOut, std::vector<APNGFrame>& frames, unsigned int first, 
       for (j=0; j<6; j++)
         op[j].valid = 0;
       deflate_rect_op(frames[1].p, x0, y0, w0, h0, bpp, rowbytes, zbuf_size, 0);
-      deflate_rect_fin(deflate_method, iter, zbuf, &zsize, bpp, rowbytes, rows, zbuf_size, 0);
+      deflate_rect_fin(zbuf, &zsize, bpp, rowbytes, rows, zbuf_size, 0);
     }
 
     for (i=first; i<num_frames-1; i++)
@@ -1381,7 +1352,7 @@ int save_apng(char * szOut, std::vector<APNGFrame>& frames, unsigned int first, 
       h0 = op[op_best].h;
       bop = op_best & 1;
 
-      deflate_rect_fin(deflate_method, iter, zbuf, &zsize, bpp, rowbytes, rows, zbuf_size, op_best);
+      deflate_rect_fin(zbuf, &zsize, bpp, rowbytes, rows, zbuf_size, op_best);
     }
 
     if (num_frames > 1)
@@ -1440,18 +1411,12 @@ int main(int argc, char** argv)
   char * szExt;
   std::vector<APNGFrame> frames;
   unsigned int first, loops, coltype;
-  int    deflate_method = 1;
-  int    iter = 15;
 
-  printf("\nAPNG Optimizer 1.4");
+  printf("\nAPNG Optimizer 1.4\n\n");
 
   if (argc <= 1)
   {
-    printf("\n\nUsage: apngopt [options] anim.png [anim_opt.png]\n\n"
-           "-z0  : zlib compression\n"
-           "-z1  : 7zip compression (default)\n"
-           "-z2  : zopfli compression\n"
-           "-i## : number of iterations, default -i%d\n", iter);
+    printf("Usage: apngopt anim.png [anim_opt.png]\n\n");
     return 1;
   }
 
@@ -1462,37 +1427,12 @@ int main(int argc, char** argv)
   {
     szOpt = argv[i];
 
-    if (szOpt[0] == '-')
-    {
-      if (szOpt[1] == 'z' || szOpt[1] == 'Z')
-      {
-        if (szOpt[2] == '0')
-          deflate_method = 0;
-        if (szOpt[2] == '1')
-          deflate_method = 1;
-        if (szOpt[2] == '2')
-          deflate_method = 2;
-      }
-      if (szOpt[1] == 'i' || szOpt[1] == 'I')
-      {
-        iter = atoi(szOpt+2);
-        if (iter < 1) iter = 1;
-      }
-    }
-    else
     if (szInput[0] == 0)
       strcpy(szInput, szOpt);
     else
     if (szOut[0] == 0)
       strcpy(szOut, szOpt);
   }
-
-  if (deflate_method == 0)
-    printf(" using ZLIB\n\n");
-  else if (deflate_method == 1)
-    printf(" using 7ZIP with %d iterations\n\n", iter);
-  else if (deflate_method == 2)
-    printf(" using ZOPFLI with %d iterations\n\n", iter);
 
   if (szOut[0] == 0)
   {
@@ -1512,7 +1452,7 @@ int main(int argc, char** argv)
   optim_duplicates(frames, first);
   optim_downconvert(frames, coltype);
 
-  save_apng(szOut, frames, first, loops, coltype, deflate_method, iter);
+  save_apng(szOut, frames, first, loops, coltype);
 
   for (size_t j=0; j<frames.size(); j++)
   {
