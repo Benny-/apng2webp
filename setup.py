@@ -14,7 +14,7 @@ setup(
     version = '0.1.0',
     author = 'Benny',
     author_email = 'Benny@GMX.it',
-    url='',
+    url='https://github.com/Benny-/apng2webp',
     license='Public Domain',
     keywords = "webp webby apng converter image".split(),
     description='Convert apng animations to webp animations',
