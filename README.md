@@ -40,7 +40,7 @@ optional arguments:
 ```bash
 apng2webp ./input.png
 apng2webp ./input.png ./output.webp
-apng2webp ./input.png -loop 3 -bgcolor 255,255,255,255 -tmpdir ./ ./output.webp
+apng2webp -loop 3 -bgcolor 255,255,255,255 -tmpdir ./ ./input.png ./output.webp
 ```
 
 ## Dependencies
