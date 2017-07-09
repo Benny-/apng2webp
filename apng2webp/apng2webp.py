@@ -8,6 +8,7 @@ import json
 import errno
 from tempfile import mkdtemp
 import shutil
+import argparse
 
 if os.name == 'nt':
     import pbs
@@ -54,61 +55,48 @@ def apng2webp(input_file, output_file, tmpdir, loop, bgcolor):
         webpmux_args.append('-frame')
         webpmux_args.append(webp_frame_file)
         webpmux_args.append('+' + str(delay) + '+' + str(frame['x']) + '+' + str(frame['y']) + '+' + str(frame['dispose_op']) + blend_mode )
-    webpmux_args = webpmux_args + ['-loop', loop]
-    webpmux_args = webpmux_args + ['-bgcolor', bgcolor]
+    
+    if(loop is not None):
+        webpmux_args = webpmux_args + ['-loop', loop]
+    if(bgcolor is not None):
+        webpmux_args = webpmux_args + ['-bgcolor', bgcolor]
+    
     webpmux_args = webpmux_args + ['-o', output_file]
     webpmux(*webpmux_args)
 
 def main():
-    argc = len(sys.argv)
-    if (argc < 3):
-        print("Usage: apng2webp input.png [-loop LOOP_COUNT] [-bgcolor BACKGROUND_COLOR] [-tmpdir TEMP_WEBP_DIR] output.webp")
-        sys.exit(errno.EINVAL)
-    else:
-        input_file = sys.argv[1]
-        output_file = sys.argv[argc-1]
-        loop = '0'
-        bgcolor = '255,255,255,255'
-        tmpdir = None
-        if (argc == 3):
-            tmpdir = mkdtemp(prefix='apng2webp_')
-            try:
-                apng2webp(input_file, output_file, tmpdir, loop, bgcolor)
-                print('finished')
-            finally:
-                shutil.rmtree(tmpdir)
-        elif (argc == 5 or argc == 7 or argc == 9):
-            argc_list = [2,4,6]
-            for argc_index in argc_list:
-                if (argc < argc_index+2):
-                    break
-                op = sys.argv[argc_index]
-                if (op == '-loop'):
-                    loop = sys.argv[argc_index+1]
-                elif (op == '-bgcolor'):
-                    bgcolor = sys.argv[argc_index+1]
-                elif (op == '-tmpdir'):
-                    tmpdir = sys.argv[argc_index+1]
 
-            if (tmpdir):
-                if not os.path.exists(tmpdir):
-                    os.makedirs(tmpdir)
-                try:
-                    apng2webp(input_file, output_file, tmpdir, loop, bgcolor)
-                    print('finished')
-                finally:
-                    print('Outputed temp webp to '+tmpdir)
-            else:
-                tmpdir = mkdtemp(prefix='apng2webp_')
-                try:
-                    apng2webp(input_file, output_file, tmpdir, loop, bgcolor)
-                    print('finished')
-                finally:
-                    shutil.rmtree(tmpdir)
+    parser = argparse.ArgumentParser(description='Convert animated png files (apng) to animated webp files.')
+    parser.add_argument('input', type=str, nargs=1, help='Input path. Must be a .png file.')
+    parser.add_argument('output', type=str, nargs='?', default=None, help='Output path. If output file already exist it will be overwritten.')
+    parser.add_argument('-l', '--loop', type=int, nargs='?', default=None, help='Passed to webpmux. The amount of times the animation should loop. 0 to 65535. Zero indicates to loop forever.')
+    parser.add_argument('-bg', '--bgcolor', type=str, nargs='?', default=None, help='Passed to webpmux. The background color as a A,R,G,B tuple. Example: 255,255,255,255')
+    parser.add_argument('-tmp', '--tmpdir', type=str, nargs='?', default=None, help='A temp directory (it may already exist) to save the temp files during converting, including the extracted PNG images, the metadata and the converted WebP static images for each frame. If not provided, it will use the system temp path and remove temp images after executing.')
+    args = parser.parse_args()
+    
+    input_path = args.input[0]
+    output_path = args.output
+    tmpdir = args.tmpdir
+    loop = args.loop
+    bgcolor = args.bgcolor
+    
+    if(output_path is None):
+        if (input_path.lower().endswith('.png')):
+            output_path = input_path[:-3] + 'webp'
         else:
-            print("Usage: apng2webp input.png [-loop LOOP_COUNT] [-bgcolor BACKGROUND_COLOR] [-tmpdir TEMP_WEBP_DIR] output.webp")
-            sys.exit(errno.EINVAL)
-
+            output_path = input_path + '.webp'
+    
+    if (tmpdir):
+        if not os.path.exists(tmpdir):
+            os.makedirs(tmpdir)
+        apng2webp(input_path, output_path, tmpdir, loop, bgcolor)
+    else:
+        tmpdir = mkdtemp(prefix='apng2webp_')
+        try:
+            apng2webp(input_path, output_path, tmpdir, loop, bgcolor)
+        finally:
+            shutil.rmtree(tmpdir)
 
 if __name__ == "__main__":
     main();
+

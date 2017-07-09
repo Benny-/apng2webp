@@ -6,24 +6,46 @@ Convert your animated png files to animated webp files.
 
 ## Usage
 
-`apng2webp input.png [-loop LOOP_COUNT] [-bgcolor BACKGROUND_COLOR] [-tmpdir TEMP_WEBP_DIR] output.webp`
+```
+usage: apng2webp.py [-h] [-l [LOOP]] [-bg [BGCOLOR]] [-tmp [TMPDIR]]
+                    input [output]
 
-options:
+Convert animated png files (apng) to animated webp files.
 
-`-loop`: spcify the animated WebP loop count. 0 means loop infinity. The default value is the loop count from original APNG.
+positional arguments:
+  input                 Input path. Must be a .png file.
+  output                Output path. If output file already exist it will be
+                        overwritten.
 
-`-bgcolor`: spcify the animated WebP background color with RGBA format. The default value is 255,255,255,255
+optional arguments:
+  -h, --help            show this help message and exit
+  -l [LOOP], --loop [LOOP]
+                        Passed to webpmux. The amount of times the animation
+                        should loop. 0 to 65535. Zero indicates to loop
+                        forever.
+  -bg [BGCOLOR], --bgcolor [BGCOLOR]
+                        Passed to webpmux. The background color as a A,R,G,B
+                        tuple. Example: 255,255,255,255
+  -tmp [TMPDIR], --tmpdir [TMPDIR]
+                        A temp directory (it may already exist) to save the
+                        temp files during converting, including the extracted
+                        PNG images, the metadata and the converted WebP static
+                        images for each frame. If not provided, it will use
+                        the system temp path and remove temp images after
+                        executing.
+```
 
-`-tmpdir`: spcify a temp path to save the temp file during converting, including the extracted PNG images, the metadata and the converted WebP static images for each frame. If not provided, it will use the system temp path and remove temp images after excuting.
+## Examples
 
 ```bash
+apng2webp ./input.png
 apng2webp ./input.png ./output.webp
 apng2webp ./input.png -loop 3 -bgcolor 255,255,255,255 -tmpdir ./ ./output.webp
 ```
 
 ## Dependencies
 
-- python
+- python (python 2 or 3 can be used)
 - cmake
 - libpng
 - zlib
@@ -47,13 +69,13 @@ brew install jsoncpp
 sudo easy_install pip
 ```
 
-### Linux
+### Linux (Debian)
 
 + Use `apt-get` to install all the dependencies.
 
 ```bash
 sudo apt-get update
-sudo apt-get install python2.7
+sudo apt-get install python
 sudo apt-get install python-pip
 sudo apt-get install cmake
 sudo apt-get install webp
@@ -79,7 +101,7 @@ pacman -S mingw-w64-x86_64-jsoncpp
 
 If you are using 32bit Windows, change all the command `x86_64` to `i686`.
 
-Additionaly, current version `mingw-w64-x86_64-make 4.2.1` has a [dynamic link bug](https://github.com/Alexpux/MSYS2-packages/issues/842) and can not run, if you are facing this issue, try `pacman -S mingw-w64-x86_64-gettext` to fix.
+Additionally, current version `mingw-w64-x86_64-make 4.2.1` has a [dynamic link bug](https://github.com/Alexpux/MSYS2-packages/issues/842) and can not run, if you are facing this issue, try `pacman -S mingw-w64-x86_64-gettext` to fix.
 
 ## Compiling and installation:
 
@@ -114,7 +136,7 @@ cmake .. -G "MinGW Makefiles"
 mingw32-make
 ```
 
-Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. You can also move them to your prefered folder. (Don't forget to change the PATH at the sametime).
+Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. You can also move them to your preferred folder. (Don't forget to change the PATH at the same time).
 
 In project root folder execute:
 
