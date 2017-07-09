@@ -112,7 +112,7 @@ For macOS and Linux user, run terminal shell.
 In `apng2webp_dependencies/` execute:
 
 ```bash
-mkdir 'build'
+mkdir build
 cd build
 cmake ..
 make
@@ -122,7 +122,7 @@ make
 In project root folder execute:
 
 ```bash
-(sudo) python ./setup.py install
+(sudo) python setup.py install
 ```
 
 ### Windows
@@ -131,7 +131,7 @@ For Windows user, run PowerShell as Administrator user.
 In `apng2webp_dependencies/` execute:
 
 ```powershell
-mkdir 'build'
+mkdir build
 cd build
 cmake .. -G "MinGW Makefiles"
 mingw32-make
@@ -142,7 +142,15 @@ Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. I
 In project root folder execute:
 
 ```powershell
-python ./setup.py install
+python setup.py install
+```
+
+## Tests
+In project root folder execute:
+
+```bash
+(sudo) pip install pytest
+python setup.py test
 ```
 
 ## Thanks
