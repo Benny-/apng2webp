@@ -1,0 +1,34 @@
+matrix:
+  include:
+    - os: osx
+      sudo: required
+      language: generic
+      before_install:
+        - brew install webp jsoncpp
+    - os: linux
+      sudo: required
+      language: python
+      before_install:
+        - sudo apt-get -qq update
+        - sudo apt-get install -y libpng-dev libjsoncpp-dev
+        - wget -O libwebp-0.6.0-linux-x86-64.tar.gz "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.6.0-linux-x86-64.tar.gz"
+        - tar -xvzf libwebp-0.6.0-linux-x86-64.tar.gz
+        - sudo mv libwebp-0.6.0-linux-x86-64/bin/cwebp /usr/local/bin/
+        - sudo mv libwebp-0.6.0-linux-x86-64/bin/webpmux /usr/local/bin/
+
+# command to install python dependencies
+install:
+  - cd apng2webp_dependencies
+  - mkdir build
+  - cd build
+  - cmake ..
+  - make
+  - sudo make install
+  - cd $TRAVIS_BUILD_DIR
+  - sudo python setup.py install
+
+# command to run tests
+script:
+  - cd $TRAVIS_BUILD_DIR
+  - wget -O test.png "http://littlesvr.ca/apng/images/world-cup-2014-42.png"
+  - apng2webp test.png test.webp
