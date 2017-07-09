@@ -148,3 +148,13 @@ python ./setup.py install
 
 [APNG Disassembler](http://apngdis.sourceforge.net/)  
 [APNG Optimizer](https://sourceforge.net/projects/apng/files/APNG_Optimizer/)
+
+## License
+
+Not all software within this project uses the same license. The following licenses/legal terms are used:
+
+- [zlib license](https://opensource.org/licenses/Zlib)
+- [GNU LGPL 2.1](https://opensource.org/licenses/LGPL-2.1) for some older versions of some parts of the software
+- Public Domain (if explicitly stated. The .py scripts are public domain)
+- [BSD 3-Clause](https://opensource.org/licenses/BSD-3-Clause) where no other license applies (this readme)
+

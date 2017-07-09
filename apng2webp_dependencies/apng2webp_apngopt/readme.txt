@@ -7,7 +7,7 @@
   Copyright (c) 2011-2015 Max Stepin
   maxst@users.sourceforge.net
 
-  License: LGPL license
+  License: zlib license
 
 --------------------------------
 
