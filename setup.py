@@ -11,7 +11,7 @@ else:
 
 setup(
     name = 'apng2webp',
-    version = '0.1.0',
+    version = '0.1.1-dev',
     author = 'Benny',
     author_email = 'Benny@GMX.it',
     url='https://github.com/Benny-/apng2webp',
