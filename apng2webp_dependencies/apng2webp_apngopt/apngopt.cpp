@@ -1328,8 +1328,9 @@ int save_apng(char * szOut, std::vector<APNGFrame>& frames, unsigned int first, 
       }
 
       /* dispose = previous */
-      if (i > first)
-        get_rect(width, height, rest, frames[i+1].p, over3, bpp, rowbytes, zbuf_size, has_tcolor, tcolor, 2);
+      // animated WebP does not support dispose previous(only none and background), so we don't use this optimization
+      // if (i > first)
+      //   get_rect(width, height, rest, frames[i+1].p, over3, bpp, rowbytes, zbuf_size, has_tcolor, tcolor, 2);
 
       op_min = op[0].size;
       op_best = 0;
