@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#-*- coding:utf-8 -*-
 
 from setuptools import setup, find_packages
 import pip
@@ -11,7 +12,7 @@ else:
 
 setup(
     name = 'apng2webp',
-    version = '0.1.1-dev',
+    version = '0.1.1.dev0',
     author = 'Benny',
     author_email = 'Benny@GMX.it',
     url='https://github.com/Benny-/apng2webp',
@@ -20,6 +21,8 @@ setup(
     description='Convert apng animations to webp animations',
     packages = find_packages(),
     install_requires = reqs,
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
     classifiers = [
         "Operating System :: OS Independent",
         "Programming Language :: Python :: 2",

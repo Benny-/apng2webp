@@ -1,6 +1,12 @@
+# python
+
 pyenv/
-examples/
 build/
 dist/
-apng2webp_dependencies/build/
 *.egg-info/
+.eggs/
+__pycache__/
+*.pyc
+
+# dependencies build
+apng2webp_dependencies/build/

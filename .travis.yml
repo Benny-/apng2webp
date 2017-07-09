@@ -3,8 +3,11 @@ matrix:
     - os: osx
       sudo: required
       language: generic
+      env:
+        - HOMEBREW_NO_AUTO_UPDATE=1
       before_install:
         - brew install webp jsoncpp
+        - sudo pip install pytest
     - os: linux
       sudo: required
       language: python
@@ -30,5 +33,4 @@ install:
 # command to run tests
 script:
   - cd $TRAVIS_BUILD_DIR
-  - wget -O test.png "http://littlesvr.ca/apng/images/world-cup-2014-42.png"
-  - apng2webp test.png test.webp
+  - sudo python setup.py test
