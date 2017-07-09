@@ -13,20 +13,14 @@
 
   Usage:
 
-apngopt [options] anim.png [anim_opt.png]
-
-  Options:
-
--z0  : zlib compression
--z1  : 7zip compression (default)
--z2  : zopfli compression
--i## : number of iterations, default -i15
+apngopt anim.png [anim_opt.png]
 
 --------------------------------
 
   This version is a modified apngopt.
   It performs LESS optimizations compared to the original.
   It performs only optimizations supported in webp.
+  It does not support compression options.
 
 --------------------------------
 
