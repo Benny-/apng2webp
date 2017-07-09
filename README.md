@@ -1,7 +1,7 @@
 
 apng2webp
 =============
-[![Build Status](https://img.shields.io/travis/dreampiggy/apng2webp/travis-ci.svg)](https://travis-ci.org/dreampiggy/apng2webp)
+[![Build Status](https://img.shields.io/travis/Benny-/apng2webp/travis-ci.svg)](https://travis-ci.org/Benny-/apng2webp)
 
 Convert your animated png files to animated webp files.
 
@@ -72,6 +72,7 @@ sudo easy_install pip
 
 ### Linux (Debian)
 
++ Use [webp](https://developers.google.com/speed/webp/docs/precompiled) to install cwebp and webpmux to your PATH.
 + Use `apt-get` to install all the dependencies.
 
 ```bash
@@ -79,7 +80,6 @@ sudo apt-get update
 sudo apt-get install python
 sudo apt-get install python-pip
 sudo apt-get install cmake
-sudo apt-get install webp
 sudo apt-get install libjsoncpp-dev
 ```
 
@@ -112,7 +112,7 @@ For macOS and Linux user, run terminal shell.
 In `apng2webp_dependencies/` execute:
 
 ```bash
-mkdir 'build'
+mkdir build
 cd build
 cmake ..
 make
@@ -122,7 +122,7 @@ make
 In project root folder execute:
 
 ```bash
-(sudo) python ./setup.py install
+(sudo) python setup.py install
 ```
 
 ### Windows
@@ -131,18 +131,26 @@ For Windows user, run PowerShell as Administrator user.
 In `apng2webp_dependencies/` execute:
 
 ```powershell
-mkdir 'build'
+mkdir build
 cd build
 cmake .. -G "MinGW Makefiles"
 mingw32-make
 ```
 
-Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. You can also move them to your preferred folder. (Don't forget to change the PATH at the same time).
+Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. If you download these excludable binary from [Release page](https://github.com/Benny-/apng2webp/releases), you can ignore the commands above and go ahead.
 
 In project root folder execute:
 
 ```powershell
-python ./setup.py install
+python setup.py install
+```
+
+## Tests
+In project root folder execute:
+
+```bash
+(sudo) pip install pytest
+python setup.py test
 ```
 
 ## Thanks
