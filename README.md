@@ -1,6 +1,7 @@
 
 apng2webp
 =============
+[![Build Status](https://img.shields.io/travis/dreampiggy/apng2webp/travis-ci.svg)](https://travis-ci.org/dreampiggy/apng2webp)
 
 Convert your animated png files to animated webp files.
 
