@@ -1,7 +1,7 @@
 
 apng2webp
 =============
-[![Build Status](https://img.shields.io/travis/Benny-/apng2webp/travis-ci.svg)](https://travis-ci.org/Benny-/apng2webp)
+[![Build Status](https://img.shields.io/travis/Benny-/apng2webp/master.svg)](https://travis-ci.org/Benny-/apng2webp)
 
 Convert your animated png files to animated webp files.
 
