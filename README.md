@@ -8,7 +8,7 @@ Convert your animated png files to animated webp files.
 ## Usage
 
 ```
-usage: apng2webp.py [-h] [-l [LOOP]] [-bg [BGCOLOR]] [-tmp [TMPDIR]]
+usage: apng2webp [-h] [-l [LOOP]] [-bg [BGCOLOR]] [-tmp [TMPDIR]]
                     input [output]
 
 Convert animated png files (apng) to animated webp files.
@@ -86,6 +86,7 @@ sudo apt-get update
 sudo apt-get install python
 sudo apt-get install python-pip
 sudo apt-get install cmake
+sudo apt-get install libpng-dev
 sudo apt-get install libjsoncpp-dev
 ```
 
