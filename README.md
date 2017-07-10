@@ -55,19 +55,25 @@ apng2webp -loop 3 -bgcolor 255,255,255,255 -tmpdir ./ ./input.png ./output.webp
 - The `cwebp` program must be in your path
 - The `webpmux` program must be in your path
 
-## Build Prepare
+## Release
+
+If you prefer to use the precompiled binary but not build from source, go to the [release page](https://github.com/Benny-/apng2webp/releases) and download `apng2webp_dependencies` for your platform. Then add the extracted binaries to your PATH.
+
+You also need `cwebp`, `webpmux` from [webp](https://developers.google.com/speed/webp/docs/precompiled) being in your path. Then check the [installation](https://github.com/Benny-/apng2webp#installation) part to install.
+
+## Build Setup
 
 ### macOS
 
-+ Use [Homebrew](https://brew.sh/) to install all the dependencies.
 + Use `easy_install` to install pip.
++ Use [Homebrew](https://brew.sh/) to install all the dependencies.
 
 ```bash
+sudo easy_install pip
 brew update
 brew install cmake
 brew install webp
 brew install jsoncpp
-sudo easy_install pip
 ```
 
 ### Linux (Debian)
@@ -104,7 +110,7 @@ If you are using 32bit Windows, change all the command `x86_64` to `i686`.
 
 Additionally, current version `mingw-w64-x86_64-make 4.2.1` has a [dynamic link bug](https://github.com/Alexpux/MSYS2-packages/issues/842) and can not run, if you are facing this issue, try `pacman -S mingw-w64-x86_64-gettext` to fix.
 
-## Compiling and installation:
+## Compilation
 
 ### macOS and Linux
 For macOS and Linux user, run terminal shell.
@@ -119,12 +125,6 @@ make
 (sudo) make install
 ```
 
-In project root folder execute:
-
-```bash
-(sudo) python setup.py install
-```
-
 ### Windows
 For Windows user, run PowerShell as Administrator user.
 
@@ -137,15 +137,18 @@ cmake .. -G "MinGW Makefiles"
 mingw32-make
 ```
 
-Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH. If you download these excludable binary from [Release page](https://github.com/Benny-/apng2webp/releases), you can ignore the commands above and go ahead.
+Then add the output `apngdisraw.exe` and `apng2webp_apngopt.exe` to your PATH.
+
+## Installation
 
 In project root folder execute:
 
-```powershell
-python setup.py install
+```bash
+(sudo) python setup.py install
 ```
 
-## Tests
+## Test
+
 In project root folder execute:
 
 ```bash
