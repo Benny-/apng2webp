@@ -52,14 +52,14 @@ apng2webp -loop 3 -bgcolor 255,255,255,255 -tmpdir ./ ./input.png ./output.webp
 - zlib
 - jsoncpp
 - pip (a python package used during installation)
-- The `cwebp` program must be in your path
-- The `webpmux` program must be in your path
+- The `cwebp` program must be in your PATH
+- The `webpmux` program must be in your PATH
 
 ## Release
 
 If you prefer to use the precompiled binary but not build from source, go to the [release page](https://github.com/Benny-/apng2webp/releases) and download `apng2webp_dependencies` for your platform. Then add the extracted binaries to your PATH.
 
-You also need `cwebp`, `webpmux` from [webp](https://developers.google.com/speed/webp/docs/precompiled) being in your path. Then check the [installation](https://github.com/Benny-/apng2webp#installation) part to install.
+You also need `python` and `pip` installed, make sure `cwebp` and `webpmux` from [webp](https://developers.google.com/speed/webp/docs/precompiled) to be in your PATH. Then check the [installation](https://github.com/Benny-/apng2webp#installation) part to install.
 
 ## Build Setup
 
