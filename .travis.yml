@@ -14,7 +14,7 @@ matrix:
     before_install:
     - sudo apt-get -qq update
     - sudo apt-get install -y libpng-dev libjsoncpp-dev
-    - wget -O libwebp-0.6.0-linux-x86-64.tar.gz "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.6.0-linux-x86-64.tar.gz"
+    - curl "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.6.0-linux-x86-64.tar.gz" -o libwebp-0.6.0-linux-x86-64.tar.gz
     - tar -xvzf libwebp-0.6.0-linux-x86-64.tar.gz
     - sudo mv libwebp-0.6.0-linux-x86-64/bin/cwebp /usr/local/bin/
     - sudo mv libwebp-0.6.0-linux-x86-64/bin/webpmux /usr/local/bin/
@@ -22,7 +22,7 @@ install:
 - cd apng2webp_dependencies
 - mkdir build
 - cd build
-- cmake ..
+- cmake -DSTATIC_LINKING=TRUE ..
 - make
 - sudo make install
 - cd $TRAVIS_BUILD_DIR
@@ -33,8 +33,8 @@ script:
 before_deploy:
   - cd $TRAVIS_BUILD_DIR
   - mkdir deploy
-  - cp /usr/local/bin/apng2webp_apngopt apng2webp_apngopt
-  - cp /usr/local/bin/apngdisraw apngdisraw
+  - cp /usr/local/bin/apng2webp_apngopt .
+  - cp /usr/local/bin/apngdisraw .
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then tar -czvf deploy/apng2webp_dependencies-osx.tar.gz apng2webp_apngopt apngdisraw ; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then tar -czvf deploy/apng2webp_dependencies-linux.tar.gz apng2webp_apngopt apngdisraw ; fi
 deploy:

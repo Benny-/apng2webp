@@ -25,7 +25,7 @@ build_script:
   - cd build
   # cmake need sh.exe not in PATH
   - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
-  - cmake .. -G "MinGW Makefiles"
+  - cmake -DSTATIC_LINKING=TRUE .. -G "MinGW Makefiles"
   - set PATH=%PATH%;C:\Program Files\Git\usr\bin
   - mingw32-make
   - cp apng2webp_apngopt.exe %MSYS2_PATH%\bin\
@@ -38,11 +38,12 @@ test_script:
 after_test:
   - cd %APPVEYOR_BUILD_FOLDER%
   - mkdir deploy
-  - cp %MSYS2_PATH%\bin\apng2webp_apngopt.exe apng2webp_apngopt.exe
-  - cp %MSYS2_PATH%\bin\apngdisraw.exe apngdisraw.exe
-  - 7z a deploy/apng2webp_dependencies-windows-%ARCH_NAME%.zip apng2webp_apngopt.exe apngdisraw.exe
+  - cd deploy
+  - cp %MSYS2_PATH%\bin\apng2webp_apngopt.exe .
+  - cp %MSYS2_PATH%\bin\apngdisraw.exe .
+  - if "%APPVEYOR_REPO_TAG%" == "true" (7z a apng2webp_dependencies-windows-%ARCH_NAME%.zip *.exe)
 artifacts:
-  - path: 'deploy/apng2webp_dependencies-windows-%ARCH_NAME%.zip'
+  - path: 'deploy/*.zip'
     name: apng2webp_dependencies-windows
 deploy:
   description: ''
