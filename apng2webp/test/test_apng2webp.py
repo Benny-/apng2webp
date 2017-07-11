@@ -25,3 +25,5 @@ def test_main():
             input_path = path.realpath(path.join(apng_dir, f_name + '.png'))
             output_path = path.realpath(path.join(webp_dir, f_name + '.webp'))
             apng2webp(input_path, output_path)
+            assert(os.path.exists(output_path))
+
