@@ -1,0 +1,54 @@
+version: 1.0.{build}
+image:
+- Visual Studio 2015
+environment:
+  matrix:
+    - architecture: x86_64
+      ARCH_NAME: x64
+      MSYS2_PATH: C:\msys64\mingw64
+    - architecture: i686
+      ARCH_NAME: x86
+      MSYS2_PATH: C:\msys64\mingw32
+install:
+  - C:\msys64\usr\bin\bash -lc "pacman -Sy"
+  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-%architecture%-libpng"
+  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-%architecture%-jsoncpp"
+  - curl "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.6.0-windows-%ARCH_NAME%.zip" -o libwebp-0.6.0-windows-%ARCH_NAME%.zip 
+  - 7z x libwebp-0.6.0-windows-%ARCH_NAME%.zip
+  - cp libwebp-0.6.0-windows-%ARCH_NAME%\bin\cwebp.exe %MSYS2_PATH%\bin\
+  - cp libwebp-0.6.0-windows-%ARCH_NAME%\bin\webpmux.exe %MSYS2_PATH%\bin\
+before_build:
+  - set PATH=%PATH%;%MSYS2_PATH%\bin
+build_script:
+  - cd apng2webp_dependencies
+  - mkdir build
+  - cd build
+  # cmake need sh.exe not in PATH
+  - set PATH=%PATH:C:\Program Files\Git\usr\bin;=%
+  - cmake .. -G "MinGW Makefiles"
+  - set PATH=%PATH%;C:\Program Files\Git\usr\bin
+  - mingw32-make
+  - cp apng2webp_apngopt.exe %MSYS2_PATH%\bin\
+  - cp apngdisraw.exe %MSYS2_PATH%\bin\
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - python setup.py install
+test_script:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - python setup.py test
+after_test:
+  - cd %APPVEYOR_BUILD_FOLDER%
+  - mkdir deploy
+  - cp %MSYS2_PATH%\bin\apng2webp_apngopt.exe apng2webp_apngopt.exe
+  - cp %MSYS2_PATH%\bin\apngdisraw.exe apngdisraw.exe
+  - 7z a deploy/apng2webp_dependencies-windows-%ARCH_NAME%.zip apng2webp_apngopt.exe apngdisraw.exe
+artifacts:
+  - path: 'deploy/apng2webp_dependencies-windows-%ARCH_NAME%.zip'
+    name: apng2webp_dependencies-windows
+deploy:
+  description: ''
+  provider: GitHub
+  auth_token:
+    secure: h7DDi0thA+gVzkb1F9jpd+Wy0BWQ8JCehNq+xY5OwC4ivxtmlR+IY2/wR9aUKx8U
+  artifact: apng2webp_dependencies-windows
+  on:
+    appveyor_repo_tag: true
