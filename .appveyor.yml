@@ -53,5 +53,3 @@ deploy:
   artifact: apng2webp_dependencies-windows
   on:
     appveyor_repo_tag: true
-skip_commits:
-  message: /\^Merge pull request/
