@@ -1,4 +1,6 @@
-cmake_minimum_required(VERSION 2.8)
+cmake_minimum_required(VERSION 3.1)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 project(apng2webp_dependecies)
@@ -9,15 +11,15 @@ add_executable(apng2webp_apngopt apng2webp_apngopt/apngopt.cpp)
 add_executable(apngdisraw apngdisraw/apngdis.cpp)
 
 if(STATIC_LINKING)
-    set(BUILD_SHARED_LIBRARIES OFF)
-# OS X gcc or clang -static not work
-    if (NOT ${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+# Windows MinGW use actually statically linked binary
+    if (MINGW)
         set(CMAKE_EXE_LINKER_FLAGS "-static")
-    endif()
-    set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_START_STATIC 1)
-    set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_END_STATIC 1)
-    set_target_properties(apngdisraw PROPERTIES LINK_SEARCH_START_STATIC 1)
-    set_target_properties(apngdisraw PROPERTIES LINK_SEARCH_END_STATIC 1)
+        set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_START_STATIC ON)
+        set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_END_STATIC ON)
+        set_target_properties(apngdisraw PROPERTIES LINK_SEARCH_START_STATIC ON)
+        set_target_properties(apngdisraw PROPERTIES LINK_SEARCH_END_STATIC ON)
+    endif(MINGW)
+    set(BUILD_SHARED_LIBRARIES OFF)
 endif(STATIC_LINKING)
 
 if(STATIC_LINKING)

@@ -3,16 +3,16 @@ image:
 - Visual Studio 2015
 environment:
   matrix:
-    - architecture: x86_64
+    - ARCHITECTURE: x86_64
       ARCH_NAME: x64
       MSYS2_PATH: C:\msys64\mingw64
-    - architecture: i686
+    - ARCHITECTURE: i686
       ARCH_NAME: x86
       MSYS2_PATH: C:\msys64\mingw32
 install:
   - C:\msys64\usr\bin\bash -lc "pacman -Sy"
-  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-%architecture%-libpng"
-  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-%architecture%-jsoncpp"
+  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-%ARCHITECTURE%-libpng"
+  - C:\msys64\usr\bin\bash -lc "pacman -S --noconfirm mingw-w64-%ARCHITECTURE%-jsoncpp"
   - curl "https://storage.googleapis.com/downloads.webmproject.org/releases/webp/libwebp-0.6.0-windows-%ARCH_NAME%.zip" -o libwebp-0.6.0-windows-%ARCH_NAME%.zip 
   - 7z x libwebp-0.6.0-windows-%ARCH_NAME%.zip
   - cp libwebp-0.6.0-windows-%ARCH_NAME%\bin\cwebp.exe %MSYS2_PATH%\bin\
