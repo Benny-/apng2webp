@@ -13,7 +13,7 @@ add_executable(apngdisraw apngdisraw/apngdis.cpp)
 if(STATIC_LINKING)
 # Windows MinGW use actually statically linked binary
     if (MINGW)
-        set(CMAKE_EXE_LINKER_FLAGS "{$CMAKE_EXE_LINKER_FLAGS} -static")
+        set(CMAKE_EXE_LINKER_FLAGS "-static -static-libgcc -static-libstdc++")
         set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_START_STATIC ON)
         set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_END_STATIC ON)
         set_target_properties(apngdisraw PROPERTIES LINK_SEARCH_START_STATIC ON)
