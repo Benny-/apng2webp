@@ -1,11 +1,11 @@
-cmake_minimum_required(VERSION 3.1)
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
 project(apng2webp_dependecies)
 set(apng2webp_dependecies_VERSION_MAJOR 1)
 set(apng2webp_dependecies_VERSION_MINOR 0)
+
+add_compile_options(-std=c++11)
 
 add_executable(apng2webp_apngopt apng2webp_apngopt/apngopt.cpp)
 add_executable(apngdisraw apngdisraw/apngdis.cpp)
@@ -13,7 +13,7 @@ add_executable(apngdisraw apngdisraw/apngdis.cpp)
 if(STATIC_LINKING)
 # Windows MinGW use actually statically linked binary
     if (MINGW)
-        set(CMAKE_EXE_LINKER_FLAGS "-static")
+        set(CMAKE_EXE_LINKER_FLAGS "{$CMAKE_EXE_LINKER_FLAGS} -static")
         set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_START_STATIC ON)
         set_target_properties(apng2webp_apngopt PROPERTIES LINK_SEARCH_END_STATIC ON)
         set_target_properties(apngdisraw PROPERTIES LINK_SEARCH_START_STATIC ON)
