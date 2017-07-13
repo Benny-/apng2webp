@@ -9,6 +9,7 @@ matrix:
     - brew install webp jsoncpp
     - sudo pip install pytest
   - os: linux
+    dist: trusty
     sudo: required
     language: python
     before_install:
