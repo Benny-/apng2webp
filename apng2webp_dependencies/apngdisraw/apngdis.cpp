@@ -32,6 +32,7 @@
 #include <fstream>
 #include <stdlib.h>
 #include <vector>
+#include <cstring>
 #include "png.h"     /* original (unpatched) libpng is ok */
 #include "zlib.h"
 #include "json/writer.h"
